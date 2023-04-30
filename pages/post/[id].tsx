@@ -114,13 +114,13 @@ const PostPage: React.FC<PostPage> = ({ post }) => {
             }}
           >
             <FaHeart size={22} color={isLikedByMe ? "red" : "black"} />
-            <p className="font-mono text-xsm">{postQuery?.data?.post.likes}</p>
+            <p className="font-mono text-xsm">{postQuery?.data?.post?.likes}</p>
           </div>
           <div
             className="flex flex-col space-y-2 items-center cursor-pointer"
             onClick={() => {
               setIsOpen((v) => !v);
-              setPostID(postQuery?.data.post._id!);
+              setPostID(postQuery?.data.post?._id!);
             }}
           >
             <FaCommentAlt size={22} />
