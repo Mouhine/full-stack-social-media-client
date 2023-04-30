@@ -193,20 +193,3 @@ const Profile = () => {
     </div>
   );
 };
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  try {
-    const response = await axios.get(`/users/${context.params?.userId}`);
-    const followersResponse = await axios.get(
-      `/users/${context.params?.userId}/followers`
-    );
-    return {
-      props: {
-        user: response.data.user[0],
-        followers: followersResponse.data.followers,
-      }, // will be passed to the page component as props
-    };
-  } catch (error) {}
-}
-
-export default Profile;
