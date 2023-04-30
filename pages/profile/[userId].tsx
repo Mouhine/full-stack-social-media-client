@@ -15,12 +15,16 @@ import axios, { axiosPrivate } from "../../utils/axios";
 import Followers from "../../components/Followers/Followers";
 import useUser from "../../api/userApi";
 import { useQuery } from "@tanstack/react-query";
+import { useDeprecatedAnimatedState } from "framer-motion";
+import { BeatLoader } from "react-spinners";
+import UserSkelton from "../../components/modals/userSkelton";
 
 const Profile = () => {
   const { auth, setAuth, posts, setFollowers, setReadingList } = useAuth();
   const { deleteUser } = useUser();
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState({} as UserType);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { signOut } = useAuthFn();
   const [view, setView] = useState<"posts" | "followers" | "readingList">(
@@ -70,9 +74,11 @@ const Profile = () => {
   });
 
   const getUser = async () => {
+    setIsLoading(true);
     try {
       const res = await axiosPrivate.get(`/users/${router.query.userId}`);
       setUser(res.data.user[0]);
+      setIsLoading(false);
     } catch (error) {}
   };
 
@@ -90,57 +96,63 @@ const Profile = () => {
     <div className=" mb-6 min-h-[150vh] dark:bg-black dark:text-white  ">
       <section className="mx-auto   h-[50vh]  bg-black  relative  ">
         <div className=" bg-white py-4 absolute dark:bg-black dark:text-white dark:border left-1/2 top-1/2 -translate-x-1/2  max-w-[500px]  w-[95%] rounded-md shadow mx-auto  my-4   flex flex-col items-center">
-          {auth.userId === user?._id && (
-            <div className=" h-[30px] rounded-full absolute left-0 bg-red-500 m-1  bg-white border grid place-items-center">
-              <Link href={`/updateProfile/${user._id}`}>
-                <button className="rounded bg-[#1da1f2] text-white shadow px-3 py-2 w-full ">
-                  update
-                </button>
-              </Link>
+          {isLoading ? (
+            <UserSkelton />
+          ) : (
+            <div className="flex flex-col items-center">
+              {auth.userId === user?._id && (
+                <div className=" h-[30px] rounded-full absolute left-0 bg-red-500 m-1  bg-white border grid place-items-center">
+                  <Link href={`/updateProfile/${user._id}`}>
+                    <button className="rounded bg-[#1da1f2] text-white shadow px-3 py-2 w-full ">
+                      update
+                    </button>
+                  </Link>
+                </div>
+              )}
+              <div>
+                <div className=" border w-[100px] h-[100px]   relative rounded-full  ">
+                  {user?.profile ? (
+                    <Image
+                      src={user?.profile as string}
+                      alt=""
+                      className=" rounded-full w-full h-full "
+                      width={200}
+                      height={200}
+                    />
+                  ) : (
+                    <div className=" w-[100px] h-[100px] grid place-content-center">
+                      <AiOutlineUser size={32} />
+                    </div>
+                  )}
+                  {auth.userId === user?._id && (
+                    <div
+                      className="w-[30px] h-[30px] dark:bg-black dar:text-white rounded-full absolute top-16 -right-2 bg-white border grid place-items-center "
+                      onClick={() => setIsOpen((v) => !v)}
+                    >
+                      <BsThreeDotsVertical />
+                    </div>
+                  )}
+                  {isOpen && (
+                    <Menu
+                      handleLogout={handleLogout}
+                      user={user}
+                      handleDeleteUser={handleDeleteUser}
+                    />
+                  )}
+                </div>
+              </div>
+              {
+                <div className=" flex flex-col items-center">
+                  <h1 className="text-2xl font-somibold  ">
+                    {user?.firstName + " " + user?.lastName}
+                  </h1>
+                  <h1 className="text-sm text-gray-300 font-somibold  ">
+                    {user?.Bio || "add a bio"}
+                  </h1>
+                </div>
+              }
             </div>
           )}
-          <div>
-            <div className=" border w-[100px] h-[100px]   relative rounded-full  ">
-              {user?.profile ? (
-                <Image
-                  src={user?.profile as string}
-                  alt=""
-                  className=" rounded-full w-full h-full "
-                  width={200}
-                  height={200}
-                />
-              ) : (
-                <div className=" w-[100px] h-[100px] grid place-content-center">
-                  <AiOutlineUser size={32} />
-                </div>
-              )}
-              {auth.userId === user?._id && (
-                <div
-                  className="w-[30px] h-[30px] dark:bg-black dar:text-white rounded-full absolute top-16 -right-2 bg-white border grid place-items-center "
-                  onClick={() => setIsOpen((v) => !v)}
-                >
-                  <BsThreeDotsVertical />
-                </div>
-              )}
-              {isOpen && (
-                <Menu
-                  handleLogout={handleLogout}
-                  user={user}
-                  handleDeleteUser={handleDeleteUser}
-                />
-              )}
-            </div>
-          </div>
-          {
-            <div className=" flex flex-col items-center">
-              <h1 className="text-2xl font-somibold  ">
-                {user?.firstName + " " + user?.lastName}
-              </h1>
-              <h1 className="text-sm text-gray-300 font-somibold  ">
-                {user?.Bio || "add a bio"}
-              </h1>
-            </div>
-          }
         </div>
       </section>
 
@@ -193,3 +205,5 @@ const Profile = () => {
     </div>
   );
 };
+
+export default Profile;
