@@ -157,6 +157,10 @@ const Post = ({ post }: postProps) => {
             <button
               className={`flex items-center space-x-1 font-thin transition ease-in-out delay-100  p-2 rounded-lg  hover:bg-[#f5f5f5]   duration-200 cursor-pointer `}
               onClick={() => {
+                if (!auth.userId) {
+                  setOpenLoginModal(true);
+                  return
+                }
                 likeLocalPost(post._id! , !isLikedByME as boolean)
                 likePostMutation.mutate()
               }}
