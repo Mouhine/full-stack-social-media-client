@@ -12,6 +12,7 @@ import PostBody from "../../components/Post_page_compnenets/PostBody";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useUser from "../../api/userApi";
 import { useRouter } from "next/router";
+import Skelton from "../../components/modals/Skelton";
 interface PostPage {
   post: PostType;
 }
@@ -93,6 +94,13 @@ const PostPage: React.FC<PostPage> = ({ post }) => {
     queryKey: ["author"],
   });
 
+  const { data: postQuery, isLoading } = useQuery({
+    queryFn: async () => {
+      return await axios.get(`/posts/${router.query?.id}`);
+    },
+  });
+  console.log(postQuery?.data);
+
   const isFollower = data?.data?.user[0]?.followers?.includes(auth.userId);
 
   return (
@@ -125,7 +133,14 @@ const PostPage: React.FC<PostPage> = ({ post }) => {
           </div>
         </section>
         {/* post section */}
-        <PostBody post={post} id={router.query.id as string} />
+        {isLoading ? (
+          <Skelton />
+        ) : (
+          <PostBody
+            post={postQuery?.data.post}
+            id={router.query.id as string}
+          />
+        )}
 
         {/* user section */}
         <UserSectionPost
