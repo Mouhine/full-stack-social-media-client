@@ -98,9 +98,8 @@ const PostPage: React.FC<PostPage> = ({ post }) => {
     following_by: auth?.userId,
   } as Follower;
 
-  const isLikedByMe = postQuery?.data?.post.likedBy?.includes(auth.userId);
+  const isLikedByMe = postQuery?.data?.post?.likedBy?.includes(auth.userId);
   const isFollower = data?.data?.user[0]?.followers?.includes(auth.userId);
-  console.log(isLikedByMe);
   return (
     <article className="min-h-[100vh]">
       <ToastContainer />

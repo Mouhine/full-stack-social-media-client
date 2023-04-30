@@ -20,7 +20,15 @@ import { BeatLoader } from "react-spinners";
 import UserSkelton from "../../components/modals/userSkelton";
 
 const Profile = () => {
-  const { auth, setAuth, posts, setFollowers, setReadingList } = useAuth();
+  const {
+    auth,
+    setAuth,
+    posts,
+    setFollowers,
+    setReadingList,
+    readingList,
+    followers,
+  } = useAuth();
   const { deleteUser } = useUser();
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState({} as UserType);
@@ -78,6 +86,7 @@ const Profile = () => {
     try {
       const res = await axiosPrivate.get(`/users/${router.query.userId}`);
       setUser(res.data.user[0]);
+      setReadingList(res.data?.user[0]?.reading_list!);
       setIsLoading(false);
     } catch (error) {}
   };
@@ -88,10 +97,8 @@ const Profile = () => {
 
   useEffect(() => {
     setFollowers(followerData.data?.data.followers);
-    setReadingList(user.reading_list!);
-  }, [auth.userId]);
+  }, [auth.userId, readingList, followers]);
 
-  // console.log(userQuery?.data);
   return (
     <div className=" mb-6 min-h-[150vh] dark:bg-black dark:text-white  ">
       <section className="mx-auto   h-[50vh]  bg-black  relative  ">
