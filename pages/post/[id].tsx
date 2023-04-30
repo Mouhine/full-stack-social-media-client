@@ -14,10 +14,8 @@ import useUser from "../../api/userApi";
 import { useRouter } from "next/router";
 interface PostPage {
   post: PostType;
-  user: UserType;
-  comments: Comment[];
 }
-const PostPage: React.FC<PostPage> = ({ post, user, comments }) => {
+const PostPage: React.FC<PostPage> = ({ post }) => {
   const router = useRouter();
   const { auth, setIsOpen, setPostID, setOpenLoginModal, likeLocalPost } =
     useAuth();
@@ -68,7 +66,7 @@ const PostPage: React.FC<PostPage> = ({ post, user, comments }) => {
         setOpenLoginModal(true);
         return Promise.reject("your not logged in");
       }
-      return followUser(user._id!, follower);
+      return followUser(post?.author?.id!, follower);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users", "author"] });
@@ -81,7 +79,7 @@ const PostPage: React.FC<PostPage> = ({ post, user, comments }) => {
         setOpenLoginModal(true);
         return Promise.reject("your not logged in");
       }
-      return unfollowUser(user._id!, auth.userId);
+      return unfollowUser(post?.author.id, auth.userId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users", "author"] });
@@ -121,18 +119,13 @@ const PostPage: React.FC<PostPage> = ({ post, user, comments }) => {
             }}
           >
             <FaCommentAlt size={22} />
-            <p className="font-mono text-xsm">{comments.length}</p>
           </div>
           <div onClick={() => saveMutation.mutate()} className="cursor-pointer">
             <BsFillBookmarkStarFill size={22} />
           </div>
         </section>
         {/* post section */}
-        <PostBody
-          post={post}
-          comments={comments}
-          id={router.query.id as string}
-        />
+        <PostBody post={post} id={router.query.id as string} />
 
         {/* user section */}
         <UserSectionPost
@@ -150,15 +143,10 @@ export default PostPage;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const response = await axios.get(`/posts/${context.params?.id}`);
-  const userResponse = await axios.get(
-    `/users/${response.data.post.author.id}`
-  );
-  const commentsResponse = await axios.get(`/comments/${context.params?.id}`);
 
   return {
     props: {
       post: response.data.post,
-      comments: commentsResponse.data.comments,
     }, // will be passed to the page component as props
   };
 }

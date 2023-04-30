@@ -10,7 +10,6 @@ import axios from "../../utils/axios";
 import UserSkelton from "../modals/userSkelton";
 type Props = {
   post: PostType;
-  comments: Comment[];
   id: string;
 };
 
