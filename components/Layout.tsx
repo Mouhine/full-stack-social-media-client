@@ -34,7 +34,7 @@ export default function Layout({
         <ToastContainer />
       </nav>
       {isOpen && (
-        <Suspense fallback={"loading..."}>
+        <Suspense fallback={""}>
           <Comments id={postID!} />
         </Suspense>
       )}

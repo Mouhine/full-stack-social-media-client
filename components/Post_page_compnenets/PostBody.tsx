@@ -46,7 +46,7 @@ const PostBody = ({ post, id }: Props) => {
               <Image
                 src={post?.author?.profile}
                 alt=""
-                className="rounded-full"
+                className="rounded-full w-full h-full "
                 height={40}
                 width={40}
               />
