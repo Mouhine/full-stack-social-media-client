@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useAuth } from "../../context/useAuth";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import Image from "next/image";
 import { Follower, PostType, UserType } from "../../types";
@@ -12,27 +11,21 @@ import { AiOutlineUser } from "react-icons/ai";
 import { GetServerSidePropsContext } from "next";
 import Menu from "../../components/profile-compnents/Menu";
 import Posts from "../../components/Posts/Posts";
-import axios from "../../utils/axios";
+import axios, { axiosPrivate } from "../../utils/axios";
 import Followers from "../../components/Followers/Followers";
 import useUser from "../../api/userApi";
-interface ProfileProps {
-  user: UserType;
-  followers: Follower[];
-}
-const Profile = ({ user, followers }: ProfileProps) => {
+import { useQuery } from "@tanstack/react-query";
+
+const Profile = () => {
   const { auth, setAuth, posts, setFollowers, setReadingList } = useAuth();
   const { deleteUser } = useUser();
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState({} as UserType);
   const router = useRouter();
   const { signOut } = useAuthFn();
   const [view, setView] = useState<"posts" | "followers" | "readingList">(
     "posts"
   );
-
-  useEffect(() => {
-    setFollowers(followers);
-    setReadingList(user.reading_list!);
-  }, [followers]);
 
   const userPosts = useMemo(
     () => posts?.filter((post) => post?.author.id === user?._id!),
@@ -61,15 +54,41 @@ const Profile = ({ user, followers }: ProfileProps) => {
     router.push("/");
   };
 
+  // fetch the user in the clinet and set it to a state
+  // fetxh followers is pass it as props
+
+  // const userQuery = useQuery({
+  //   queryFn: async () => {
+  //     return await axios.get(`/users/${router.query.userId}`);
+  //   },
+  // });
+
+  const followerData = useQuery({
+    queryFn: async () => {
+      return await axios.get(`/users/${router.query.userId}/followers`);
+    },
+  });
+
+  const getUser = async () => {
+    try {
+      const res = await axiosPrivate.get(`/users/${router.query.userId}`);
+      setUser(res.data.user[0]);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    getUser();
+  }, [auth.userId]);
+
+  useEffect(() => {
+    setFollowers(followerData.data?.data.followers);
+    setReadingList(user.reading_list!);
+  }, [auth.userId]);
+
+  // console.log(userQuery?.data);
   return (
     <div className=" mb-6 min-h-[150vh] dark:bg-black dark:text-white  ">
       <section className="mx-auto   h-[50vh]  bg-black  relative  ">
-        {/* <img
-          src={user?.cover ? user.cover : image && URL.createObjectURL(image)}
-          alt=""
-          className="w-full h-full object-fill"
-        /> */}
-
         <div className=" bg-white py-4 absolute dark:bg-black dark:text-white dark:border left-1/2 top-1/2 -translate-x-1/2  max-w-[500px]  w-[95%] rounded-md shadow mx-auto  my-4   flex flex-col items-center">
           {auth.userId === user?._id && (
             <div className=" h-[30px] rounded-full absolute left-0 bg-red-500 m-1  bg-white border grid place-items-center">

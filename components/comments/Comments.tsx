@@ -4,7 +4,7 @@ import { BiSend } from "react-icons/bi";
 import { useAuth } from "../../context/useAuth";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import axios from "../../utils/axios";
-import { Comment } from "../../types";
+import { Comment, UserType } from "../../types";
 import useComment from "../../api/CommentsApi";
 import CommentElement from "./Comment";
 import { useQuery, useMutation, QueryClient } from "@tanstack/react-query";
@@ -24,7 +24,7 @@ const Comments = ({ id }: commentProps) => {
     comments,
   } = useAuth();
   const [comment, setComment] = useState("");
-
+  const [user, setUser] = useState({} as UserType);
   const axiosPrivate = useAxiosPrivate();
 
   const queryClient = new QueryClient();
@@ -40,21 +40,24 @@ const Comments = ({ id }: commentProps) => {
     setComments(Comments?.data.comments);
   }, [isLoading]);
 
-  const { data: User } = useQuery({
-    queryFn: async () => {
-      return await axiosPrivate.get(`/users/${auth.userId}`);
-    },
-  });
+  const getUser = async () => {
+    try {
+      const res = await axiosPrivate.get(`/users/${auth.userId}`);
+      setUser(res.data?.user[0] || null);
+    } catch (error) {}
+  };
 
-  console.log(User?.data, "this is user");
+  useEffect(() => {
+    getUser();
+  }, [auth.userId]);
 
   const commentBody = {
     body: comment,
     author: {
       id: auth?.userId,
-      profile: User?.data?.user[0]?.profile as string,
-      firstName: User?.data?.user[0]?.firstName,
-      lastName: User?.data?.user[0]?.lastName,
+      profile: user?.profile as string,
+      firstName: user?.firstName,
+      lastName: user?.lastName,
     },
     belong_to: id,
     likes: 0,

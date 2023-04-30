@@ -24,15 +24,6 @@ const PostPage: React.FC<PostPage> = ({ post }) => {
   const { likePost, savePost } = usePost();
   const { followUser, unfollowUser } = useUser();
 
-  const follower = {
-    id: post?.author?.id!,
-    firstName: post?.author?.firstName,
-    lastName: post?.author?.lastName,
-    profile: post?.author?.profile,
-    following_by: auth?.userId,
-  } as Follower;
-
-  const isLikedByMe = post.likedBy?.includes(auth.userId);
   const queryClient = useQueryClient();
 
   const saveMutation = useMutation({
@@ -99,10 +90,17 @@ const PostPage: React.FC<PostPage> = ({ post }) => {
       return await axios.get(`/posts/${router.query?.id}`);
     },
   });
-  console.log(postQuery?.data);
+  const follower = {
+    id: postQuery?.data?.post?.author?.id!,
+    firstName: postQuery?.data?.post?.author?.firstName,
+    lastName: postQuery?.data?.post?.author?.lastName,
+    profile: postQuery?.data?.post?.author?.profile,
+    following_by: auth?.userId,
+  } as Follower;
 
+  const isLikedByMe = postQuery?.data?.post.likedBy?.includes(auth.userId);
   const isFollower = data?.data?.user[0]?.followers?.includes(auth.userId);
-
+  console.log(isLikedByMe);
   return (
     <article className="min-h-[100vh]">
       <ToastContainer />
@@ -111,19 +109,19 @@ const PostPage: React.FC<PostPage> = ({ post }) => {
           <div
             className="flex flex-col space-y-2 items-center cursor-pointer  "
             onClick={() => {
-              likeLocalPost(post._id!, addLike);
+              likeLocalPost(postQuery?.data?.post._id!, addLike);
               likePostMutation.mutate();
               setAddLike(!addLike);
             }}
           >
             <FaHeart size={22} color={isLikedByMe ? "red" : "black"} />
-            <p className="font-mono text-xsm">{post?.likes}</p>
+            <p className="font-mono text-xsm">{postQuery?.data?.post.likes}</p>
           </div>
           <div
             className="flex flex-col space-y-2 items-center cursor-pointer"
             onClick={() => {
               setIsOpen((v) => !v);
-              setPostID(post._id!);
+              setPostID(postQuery?.data.post._id!);
             }}
           >
             <FaCommentAlt size={22} />
@@ -144,7 +142,7 @@ const PostPage: React.FC<PostPage> = ({ post }) => {
 
         {/* user section */}
         <UserSectionPost
-          post={post}
+          post={postQuery?.data.post}
           isFollower={isFollower as boolean}
           unFollowUserMutation={unFollowUserMutation}
           followUserMutation={followUserMutation}
@@ -155,13 +153,3 @@ const PostPage: React.FC<PostPage> = ({ post }) => {
 };
 
 export default PostPage;
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const response = await axios.get(`/posts/${context.params?.id}`);
-
-  return {
-    props: {
-      post: response.data.post,
-    }, // will be passed to the page component as props
-  };
-}

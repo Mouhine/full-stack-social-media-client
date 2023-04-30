@@ -34,22 +34,22 @@ const UpdateProfile = () => {
   const { updateUser } = useUser();
   const getUser = async () => {
     try {
-      return await axiosPrivate.get(`/users/${router.query.userId}`);
+      const res = await axiosPrivate.get(`/users/${router.query.userId}`);
+      setUser(res.data.user[0]);
     } catch (error) {}
   };
 
-  const { data, isLoading: quueryLoading } = useQuery({
-    queryFn: getUser,
-  });
+  useEffect(() => {
+    getUser();
+  }, []);
 
   useEffect(() => {
-    setFirstName(data?.data?.user[0]?.firstName);
-    setLastName(data?.data?.user[0]?.lastName);
-    setEmail(data?.data?.user[0]?.email);
-    setBio(data?.data?.user[0]?.Bio as string);
-    setJob(data?.data?.user[0]?.job as string);
-    setUser(data?.data.user[0]);
-  }, [quueryLoading]);
+    setFirstName(user?.firstName);
+    setLastName(user?.lastName);
+    setEmail(user?.email);
+    setBio(user?.Bio as string);
+    setJob(user?.job as string);
+  }, [user]);
 
   const userInfo = {
     firstName,
@@ -163,7 +163,7 @@ const UpdateProfile = () => {
                   />
                 ) : (
                   <img
-                    src={data?.data.user[0].cover || ""}
+                    src={user.cover || ""}
                     alt=""
                     className="w-full h-full rounded-full border "
                   />
@@ -202,7 +202,7 @@ const UpdateProfile = () => {
                   />
                 ) : (
                   <img
-                    src={data?.data.user[0].profile || ""}
+                    src={user?.profile || ""}
                     alt=""
                     className="w-full h-full rounded-full "
                   />
