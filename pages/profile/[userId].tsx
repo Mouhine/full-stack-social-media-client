@@ -97,7 +97,7 @@ const Profile = () => {
 
   useEffect(() => {
     setFollowers(followerData.data?.data.followers);
-  }, [auth.userId, readingList, followers]);
+  }, [auth.userId, readingList]);
 
   return (
     <div className=" mb-6 min-h-[150vh] dark:bg-black dark:text-white  ">
