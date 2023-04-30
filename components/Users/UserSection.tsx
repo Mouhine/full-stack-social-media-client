@@ -25,7 +25,7 @@ const UserSection = () => {
         <div className="w-full bg-[#333] h-10 rounded-t-lg relative">
           <section className="flex items-end absolute top-5 left-3 space-x-4 w-full ">
             <div className="rounded-full w-[40px] h-[35px] bg-gray-100 dark:bg-blue-600 grid place-items-center ">
-              {data?.data?.user[0]?.profile ? (
+              {!isLoading && data?.data?.user[0]?.profile ? (
                 <img
                   src={data?.data?.user[0]?.profile}
                   alt=""
