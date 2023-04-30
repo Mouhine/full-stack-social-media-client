@@ -218,12 +218,3 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     </AuthContext.Provider>
   );
 };
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  console.log("hello form context server");
-  return {
-    props: {},
-  };
-}
-
-export default AuthContext;
