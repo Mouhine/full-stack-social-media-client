@@ -9,6 +9,7 @@ import useComment from "../../api/CommentsApi";
 import CommentElement from "./Comment";
 import { useQuery, useMutation, QueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { BeatLoader } from "react-spinners";
 
 interface commentProps {
   id: string;
@@ -25,20 +26,18 @@ const Comments = ({ id }: commentProps) => {
   } = useAuth();
   const [comment, setComment] = useState("");
   const [user, setUser] = useState({} as UserType);
+  const [isLoading, setIsLoading] = useState(false);
   const axiosPrivate = useAxiosPrivate();
 
   const queryClient = new QueryClient();
 
-  const { data: Comments, isLoading } = useQuery({
-    queryFn: async () => {
-      return await axios.get(`/comments/${id}`);
-    },
-    queryKey: ["comments"],
-  });
-
-  useEffect(() => {
-    setComments(Comments?.data.comments);
-  }, [isLoading]);
+  const getComments = async () => {
+    setIsLoading(true);
+    const res = await axios.get(`/comments/${id}`);
+    setComments(res.data.comments);
+    console.log(comments);
+    setIsLoading(false);
+  };
 
   const getUser = async () => {
     try {
@@ -49,6 +48,7 @@ const Comments = ({ id }: commentProps) => {
 
   useEffect(() => {
     getUser();
+    getComments();
   }, [auth.userId]);
 
   const commentBody = {
@@ -114,14 +114,18 @@ const Comments = ({ id }: commentProps) => {
         </section>
 
         <section className=" mt-2 ">
-          {comments?.length === 0 ? (
-            <div className="h-[400px] grid place-items-center  w-full text-xl font-mono -font-bold">
-              no comments
-            </div>
+          {isLoading ? (
+            <BeatLoader />
           ) : (
             comments?.map((c: Comment, i: number) => {
               return <CommentElement key={i} c={c} />;
             })
+          )}
+
+          {comments?.length === 0 && (
+            <div className="h-[400px] grid place-items-center  w-full text-xl font-mono -font-bold">
+              no comments
+            </div>
           )}
         </section>
       </div>

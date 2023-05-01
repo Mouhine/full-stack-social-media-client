@@ -28,7 +28,7 @@ const PostBody = ({ post, id }: Props) => {
   }, [isLoading]);
 
   return (
-    <section className="col-span-12 md:col-span-11 lg:col-span-7   max-h-[90vh] overflow-y-scroll ">
+    <section className="col-span-12 md:col-span-11 lg:col-span-8   max-h-[90vh] overflow-y-scroll ">
       <div className="bg-white border text-sm  dark:bg-black dark:text-white rounded">
         <div className="w-full  ">
           {post?.cover && (
@@ -54,10 +54,10 @@ const PostBody = ({ post, id }: Props) => {
             )}
           </div>
           <div className="flex flex-col  relative w-full ">
-            <p className="text-[10px]  text-[#c8c8c8]">
+            <p className="text-[13px]  text-[#c8c8c8]">
               {post?.author?.firstName}
             </p>
-            <p className="text-[10px]  text-[#c8c8c8]">{post?.author?.job}</p>
+            <p className="text-[13px]  text-[#c8c8c8]">{post?.author?.job}</p>
             <p className="absolute top-0 right-0 md:left-[30%] text-sm text-[#c8c8c8]">
               Posted at{" "}
               {post?.date
@@ -97,7 +97,7 @@ const PostBody = ({ post, id }: Props) => {
         <h1 className="ml-4 py-2">Comments</h1>
         {comments?.length === 0 ? (
           <section className="flex flex-col space-y-4">
-            <div className="block md:hidden">
+            <div className="block ">
               <div
                 className="flex flex-col space-y-2 items-center cursor-pointer"
                 onClick={() => {
@@ -114,7 +114,7 @@ const PostBody = ({ post, id }: Props) => {
           </section>
         ) : (
           <div className="flex flex-col space-y-4">
-            <div className="block md:hidden">
+            <div className="block ">
               <div
                 className="flex flex-col space-y-2 items-center cursor-pointer"
                 onClick={() => {

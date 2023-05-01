@@ -104,31 +104,6 @@ const PostPage: React.FC<PostPage> = ({ post }) => {
     <article className="min-h-[100vh]">
       <ToastContainer />
       <div className="w-[90%] mx-auto grid grid-cols-12 gap-4   ">
-        <section className="col-span-1 h-[300px]  dark:bg-black dark:text-white hidden md:flex    flex-col space-y-6 justify-center items-center  ">
-          <div
-            className="flex flex-col space-y-2 items-center cursor-pointer  "
-            onClick={() => {
-              likeLocalPost(postQuery?.data?.post._id!, addLike);
-              likePostMutation.mutate();
-              setAddLike(!addLike);
-            }}
-          >
-            <FaHeart size={22} color={isLikedByMe ? "red" : "black"} />
-            <p className="font-mono text-xsm">{postQuery?.data?.post?.likes}</p>
-          </div>
-          <div
-            className="flex flex-col space-y-2 items-center cursor-pointer"
-            onClick={() => {
-              setIsOpen((v) => !v);
-              setPostID(postQuery?.data.post?._id!);
-            }}
-          >
-            <FaCommentAlt size={22} />
-          </div>
-          <div onClick={() => saveMutation.mutate()} className="cursor-pointer">
-            <BsFillBookmarkStarFill size={22} />
-          </div>
-        </section>
         {/* post section */}
         {isLoading ? (
           <Skelton />
