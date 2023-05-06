@@ -37,8 +37,6 @@ const CommentElement = ({ c }: CommentsProps) => {
     },
   });
 
-  console.log(c.likes);
-
   return (
     <div className="flex  items-start space-x-3  rounded px-2   ">
       <div className="border w-full p-2 rounded-lg mb-4 ">
@@ -66,7 +64,7 @@ const CommentElement = ({ c }: CommentsProps) => {
             <button
               className="border-0 bg-none cursor-pointer hover:bg-[#3b49de] rounded-md"
               onClick={() => {
-                // likeLocalComment(c._id!, addCommentLike);
+                likeLocalComment(c._id!, addCommentLike);
                 setAddCommentLike((prev) => !prev);
                 likeCommentMutation.mutate(c._id!);
               }}
